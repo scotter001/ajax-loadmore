@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Jquery</title>
+
+    <style>
+
+      .red {
+        color: red;
+      }
+
+      .large {
+        font-size: 100px;
+      }
+
+      .wrapper {
+        width: 100%;
+        /* height: 2000px; */
+      }
+
+      h1 {
+        color: #fff;
+        background: #333;
+        margin-top: 8px;
+      }
+
+      .button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+      }
+
+    </style>
+  </head>
+  <body>
+
+    <div class="wrapper">
+
+      <button type="button" class="button">Scroll to Top!</button>
+
+      <h1 class="heading">Jquery</h1>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+
+
+      // document ready
+      $(function() {
+
+        $.ajax({
+          type: 'get',
+          url: 'http://superdev.sondn.com/api/v1/courses',
+          dataType: 'json',
+          success: function(courses, status) {
+            $.each(courses, function(index, course) {
+
+            });
+          },
+          error: function(error) {
+            console.log('error --> ', error);
+          }
+        });
+
+      });
+    </script>
+  </body>
+</html>

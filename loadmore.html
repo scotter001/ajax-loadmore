@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Load more</title>
+    <link rel="stylesheet" href="./css/loadmore.css">
+  </head>
+  <body>
+
+    <div id="wrapper">
+      <ul class="courses-list">
+      </ul>
+
+      <div class="load-more-wrap">
+        <div class="load-more-btn">Load more</div>
+      </div>
+
+      <div id="go-to-top" />
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/locale/vi.js"></script>
+    <script>
+
+      // define global variables
+      var lessonPage = 1;
+      var lessonFetching = false;
+
+
+      // document ready
+      $(function() {
+        getLessons();
+      });
+
+      $('.load-more-btn').click(function() {
+        if (lessonFetching) return;
+
+        lessonPage++;
+        getLessons(lessonPage);
+      });
+
+      function getLessons(page) {
+        if (!page) {
+          page = 1;
+        }
+
+        var loadMoreBtn = $('.load-more-btn');
+        var prevText = loadMoreBtn.text();
+
+        // show loading
+        loadMoreBtn.text('Loading...');
+        lessonFetching = true;
+
+        $.ajax({
+          type: 'get',
+          url: 'http://superdev.sondn.com/api/v1/lessons?page=' + page,
+          dataType: 'json',
+          success: function(lessons) {
+            // auto hide .load-more-btn
+            if (lessons.length === 0) {
+              loadMoreBtn.fadeOut();
+            }
+
+            appendLessons(lessons);
+            loadMoreBtn.text(prevText);
+
+            lessonFetching = false;
+          }
+        });
+      }
+
+      function appendLessons(lessons) {
+        var html = '';
+        $.each(lessons, function(index, lesson) {
+          html += '<li class="course-item">';
+          html += '  <h3 class="course-title">' + lesson.name + '</h3>';
+          html += '  <p class="course-desc">' + lesson.description + '</p>';
+          html += '  <p class="created-from-now">' + moment(lesson.created_at).fromNow() + '</p>';
+          html += '</li>';
+        });
+
+        $('.courses-list').append(html);
+      }
+
+    </script>
+  </body>
+</html>

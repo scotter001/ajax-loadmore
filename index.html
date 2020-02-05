@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Jquery</title>
+
+    <style media="screen">
+      .red {
+        color: red;
+      }
+      .large {
+        font-size: 50px;
+      }
+      ul {
+        border: 1px solid #ccc;
+        padding: 8px;
+      }
+      li {
+        list-style: none;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="courses-list">
+
+    </div>
+
+    <div class="">
+      <img class="loading" src="https://i.gifer.com/1amw.gif" width="100">
+    </div>
+
+    <button class="cource-loadmore" type="button" name="button">Load more</button>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+
+      // cach 1: document ready
+      // $(document).ready(function() {
+      //   alert('document Ready!')
+      // });
+
+      // cach 2: document ready
+      // $(function() {
+      //   alert('document ready 2!');
+      // });
+
+      // cach tham chieu toi 1 element
+      // var headingElement = $('#heading');
+      //
+      // // cach lang nghe 1 su kien
+      // headingElement.hover(function() {
+      //   var that = $(this);
+      //
+      //   // dom css trong jquery
+      //   that.css({
+      //     color: 'red',
+      //     fontSize: '100px',
+      //     backgroundColor: '#333'
+      //   });
+      // });
+
+      // $('.heading').click(function() {
+      //   alert($(this).text());
+      // });
+
+      // var headingElement = $('.heading');
+      // headingElement.css({
+      //   color: 'red',
+      //   fontSize: '100px',
+      //   backgroundColor: '#333'
+      // });
+
+
+      // var html = '';
+      // html += '<ul>';
+      // html += '  <li>Dang Ngoc Son</li>';
+      // html += '  <li>HN, VN</li>';
+      // html += '</ul>';
+      //
+      // // tương tự innerHTML
+      // $('.content').html(html);
+      //
+      // // gần giống với appendChild
+      // $('.content').append('<h1>HEADING</h1>');
+
+
+      // get element by tag name
+
+      // $('h1').hover(
+      // // on hover
+      //   function() {
+      //     $(this).addClass('red large');
+      //   },
+      // // on mouse over
+      //   function() {
+      //     $(this).removeClass('red large');
+      //   }
+      // );
+
+      // $('.toggle').click(function() {
+      //   alert($('h1').height())
+      // });
+
+      var page = 1;
+      var loadmoreDisabled = false;
+      var onLoading = false;
+
+      $(function() {
+        getCourses(page, function(courses) {
+          var html = '';
+          $.each(courses, function(index, course) {
+            html += '<ul>';
+            html += '  <li>ID: ' + course.id + '</li>';
+            html += '  <li>' + course.name + '</li>';
+            html += '  <li>' + course.description + '</li>';
+            html += '</ul>';
+          });
+
+          $('.courses-list').html(html);
+          $('.loading').hide();
+        });
+      });
+
+      // khi click vao button loadmore
+      $('.cource-loadmore').click(function() {
+        nextPage();
+      });
+
+      function nextPage() {
+        page++;
+        onLoading = true;
+
+        $('.loading').show();
+
+        getCourses(page, function(courses) {
+          onLoading = false;
+
+          if (courses.length === 0) {
+            loadmoreDisabled = true;
+            $('.loading').hide();
+            $('.cource-loadmore').hide();
+            return;
+          }
+
+          var html = '';
+          $.each(courses, function(index, course) {
+            html += '<ul>';
+            html += '  <li>ID: ' + course.id + '</li>';
+            html += '  <li>' + course.name + '</li>';
+            html += '  <li>' + course.description + '</li>';
+            html += '</ul>';
+          });
+
+          $('.courses-list').append(html);
+          $('.loading').hide();
+        });
+      }
+
+      $(window).scroll(function() {
+        var onBottom = $(this).scrollTop() + $(this).height() >= $(this).height() - 100;
+
+        // onBottom && nextPage();
+
+        if (onBottom && !loadmoreDisabled && !onLoading) {
+          nextPage();
+        }
+      });
+
+      function getCourses(page, callback) {
+        $.ajax({
+          type: 'get',
+          url: 'http://superdev.sondn.com/api/v1/courses?page=' + page,
+          dataType: 'json',
+          success: function(courses, status) {
+            if (status === 'success' && typeof callback === 'function') {
+              setTimeout(function() {
+                callback(courses);
+              }, 1000);
+            }
+          },
+          error: function() {
+            alert('Error!');
+          }
+        })
+      }
+
+    </script>
+  </body>
+</html>
